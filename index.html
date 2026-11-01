@@ -1,715 +1,433 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>साहित्य ढाणी | लेखिका रंजू कंवर चारण</title>
-    <link href="https://fonts.googleapis.com/css2?family=Rozha+One&family=Yatra+One&family=Martel:wght@400;700&display=swap" rel="stylesheet">
-    
-    <!-- Firebase SDK Links -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
-    <style>
-        :root {
-            --primary: #8B263E;
-            --secondary: #D4AF37;
-            --accent: #C85A32;
-            --bg-color: #FAF4E8;
-            --card-bg: #FFFDF9;
-            --text-dark: #2B1E1A;
-            --border-color: #E2D3C1;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: 'Martel', serif;
-            background-color: var(--bg-color);
-            color: var(--text-dark);
-            line-height: 1.8;
-            background-image: radial-gradient(#d4af3733 1px, transparent 1px);
-            background-size: 20px 20px;
-            padding-bottom: 90px;
-        }
-
-        header {
-            background-color: var(--primary);
-            color: #FFF;
-            text-align: center;
-            padding: 2rem 1rem;
-            border-bottom: 5px solid var(--secondary);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-        }
-
-        header h1 {
-            font-family: 'Rozha One', serif;
-            font-size: 2.6rem;
-            color: var(--secondary);
-            margin-bottom: 0.2rem;
-        }
-
-        header .author-subtitle {
-            font-size: 1.1rem;
-            color: #F7E7CE;
-            font-weight: bold;
-        }
-
-        nav {
-            background-color: #5C1929;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.8rem 1.2rem;
-            flex-wrap: wrap;
-            gap: 10px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        nav .nav-links { display: flex; gap: 8px; flex-wrap: wrap; }
-
-        nav button {
-            color: #FFF;
-            background: none;
-            border: none;
-            font-family: inherit;
-            font-size: 0.95rem;
-            cursor: pointer;
-            padding: 5px 10px;
-            border-radius: 4px;
-            transition: 0.3s;
-        }
-
-        nav button:hover {
-            background-color: var(--secondary);
-            color: var(--primary);
-        }
-
-        .layout-grid {
-            max-width: 1100px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-            display: grid;
-            grid-template-columns: 1fr 300px;
-            gap: 20px;
-        }
-
-        @media (max-width: 850px) {
-            .layout-grid { grid-template-columns: 1fr; }
-        }
-
-        .btn-primary {
-            background-color: var(--accent);
-            color: white;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-            font-family: inherit;
-        }
-
-        .btn-pdf {
-            background-color: #007bff;
-            color: white;
-            padding: 8px 14px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-            display: inline-block;
-            margin-top: 10px;
-            font-size: 0.9rem;
-        }
-
-        .btn-pay-direct {
-            background-color: #28a745;
-            color: white;
-            padding: 12px 18px;
-            border: none;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-            text-decoration: none;
-            display: block;
-            margin: 12px 0;
-            font-size: 1.05rem;
-            text-align: center;
-            box-shadow: 0 4px 10px rgba(40,167,69,0.3);
-        }
-
-        .btn-contact-wa {
-            background-color: #25D366;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 4px;
-            text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: bold;
-            display: inline-block;
-            margin-top: 5px;
-        }
-
-        .admin-btn-group {
-            float: right;
-            display: flex;
-            gap: 5px;
-        }
-
-        .btn-edit {
-            background-color: #F0AD4E;
-            color: white;
-            padding: 4px 10px;
-            border: none;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            cursor: pointer;
-        }
-
-        .btn-danger {
-            background-color: #D9534F;
-            color: white;
-            padding: 4px 10px;
-            border: none;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            cursor: pointer;
-        }
-
-        .card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            position: relative;
-        }
-
-        .card h2 { font-family: 'Yatra One', cursive; color: var(--primary); margin-bottom: 0.5rem; }
-
-        .badge {
-            display: inline-block;
-            background: var(--secondary);
-            color: var(--primary);
-            padding: 2px 8px;
-            font-size: 0.8rem;
-            border-radius: 4px;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-
-        .content-preview {
-            position: relative;
-            max-height: 90px;
-            overflow: hidden;
-            white-space: pre-line;
-        }
-
-        .content-preview::after {
-            content: "";
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
-            height: 40px;
-            background: linear-gradient(transparent, var(--card-bg));
-        }
-
-        .full-content { white-space: pre-line; margin-top: 10px; }
-
-        .paywall-box {
-            background: #FFF8E7;
-            border: 1px dashed var(--accent);
-            padding: 12px;
-            text-align: center;
-            border-radius: 6px;
-            margin-top: 12px;
-        }
-
-        .sidebar-ad-card {
-            background: var(--card-bg);
-            border: 1px dashed var(--secondary);
-            border-radius: 8px;
-            padding: 1rem;
-            text-align: center;
-            margin-bottom: 1.5rem;
-            font-size: 0.85rem;
-            color: #666;
-            position: sticky;
-            top: 70px;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .modal-content {
-            background: var(--card-bg);
-            padding: 1.8rem;
-            border-radius: 8px;
-            width: 90%;
-            max-width: 480px;
-            position: relative;
-            text-align: center;
-        }
-
-        .close {
-            position: absolute;
-            top: 10px; right: 15px;
-            font-size: 22px;
-            cursor: pointer;
-            color: var(--primary);
-        }
-
-        input, textarea, select {
-            width: 100%;
-            padding: 10px;
-            margin: 8px 0 14px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            font-family: inherit;
-            text-align: left;
-        }
-
-        footer {
-            text-align: center;
-            padding: 1rem;
-            background: var(--primary);
-            color: white;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            border-top: 4px solid var(--secondary);
-            font-size: 0.85rem;
-        }
-
-        .admin-controls {
-            display: none;
-            background: #F3E5AB;
-            padding: 8px 12px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            font-size: 0.9rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        #qrCodeImg {
-            width: 160px;
-            height: 160px;
-            margin: 10px auto;
-            display: block;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>साहित्य ढाणी | लेखिका रंजू कंवर चारण</title>
+<link href="https://fonts.googleapis.com/css2?family=Rozha+One&family=Yatra+One&family=Martel:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<style>
+:root{--primary:#8B263E;--secondary:#D4AF37;--accent:#C85A32;--bg-color:#FAF4E8;--card-bg:#FFFDF9;--text-dark:#2B1E1A;--border-color:#E2D3C1}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Martel',serif;background-color:var(--bg-color);color:var(--text-dark);line-height:1.8;background-image:radial-gradient(#d4af3733 1px,transparent 1px);background-size:20px 20px;padding-bottom:90px}
+header{background:var(--primary);color:#fff;text-align:center;padding:2rem 1rem;border-bottom:5px solid var(--secondary);box-shadow:0 4px 15px #0002}
+header h1{font-family:'Rozha One',serif;font-size:2.6rem;color:var(--secondary);margin-bottom:.2rem}
+.author-subtitle{font-size:1.1rem;color:#F7E7CE;font-weight:bold}
+nav{background:#5C1929;display:flex;justify-content:space-between;align-items:center;padding:.8rem 1.2rem;flex-wrap:wrap;gap:10px;position:sticky;top:0;z-index:100}
+.nav-links{display:flex;gap:8px;flex-wrap:wrap}
+nav button{color:#fff;background:none;border:0;font-family:inherit;font-size:.95rem;cursor:pointer;padding:5px 10px;border-radius:4px}
+nav button:hover{background:var(--secondary);color:var(--primary)}
+.layout-grid{max-width:1100px;margin:2rem auto;padding:0 1rem;display:grid;grid-template-columns:1fr 300px;gap:20px}
+@media(max-width:850px){.layout-grid{grid-template-columns:1fr}header h1{font-size:2rem}}
+.btn-primary{background:var(--accent);color:#fff;padding:8px 16px;border:0;border-radius:6px;font-weight:bold;cursor:pointer;font-family:inherit}
+.btn-pdf{background:#007bff;color:#fff;padding:8px 14px;border-radius:5px;text-decoration:none;font-weight:bold;display:inline-block;margin-top:10px;font-size:.9rem}
+.btn-contact-wa{background:#25D366;color:#fff;padding:6px 12px;border-radius:4px;text-decoration:none;font-size:.85rem;font-weight:bold;display:inline-block;margin-top:5px}
+.admin-btn-group{float:right;display:flex;gap:5px}
+.btn-edit,.btn-danger{color:#fff;padding:4px 10px;border:0;border-radius:4px;font-size:.85rem;cursor:pointer}
+.btn-edit{background:#F0AD4E}.btn-danger{background:#D9534F}
+.card{background:var(--card-bg);border:1px solid var(--border-color);border-radius:8px;padding:1.5rem;margin-bottom:1.5rem;box-shadow:0 2px 8px #0000000d;position:relative}
+.card h2{font-family:'Yatra One',cursive;color:var(--primary);margin-bottom:.5rem}
+.badge{display:inline-block;background:var(--secondary);color:var(--primary);padding:2px 8px;font-size:.8rem;border-radius:4px;font-weight:bold;margin-bottom:8px}
+.full-content{white-space:pre-line;margin-top:10px}
+.paywall-box{background:#FFF8E7;border:1px dashed var(--accent);padding:12px;text-align:center;border-radius:6px;margin-top:12px}
+.sidebar-ad-card{background:var(--card-bg);border:1px dashed var(--secondary);border-radius:8px;padding:1rem;text-align:center;margin-bottom:1.5rem;font-size:.85rem;color:#666;position:sticky;top:70px}
+.modal{display:none;position:fixed;inset:0;background:#0009;justify-content:center;align-items:center;z-index:1000}
+.modal-content{background:var(--card-bg);padding:1.8rem;border-radius:8px;width:90%;max-width:480px;position:relative;text-align:center;max-height:90vh;overflow:auto}
+.close{position:absolute;top:10px;right:15px;font-size:22px;cursor:pointer;color:var(--primary)}
+input,textarea,select{width:100%;padding:10px;margin:8px 0 14px;border:1px solid var(--border-color);border-radius:4px;font-family:inherit}
+input[type=checkbox]{width:auto;margin:8px}
+footer{text-align:center;padding:1rem;background:var(--primary);color:#fff;position:fixed;bottom:0;width:100%;border-top:4px solid var(--secondary);font-size:.85rem;z-index:50}
+.admin-controls{display:none;background:#F3E5AB;padding:8px 12px;border-radius:6px;margin-bottom:15px;font-size:.9rem;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+#qrCodeImg{width:160px;height:160px;margin:10px auto;display:block;border:2px solid var(--border-color);border-radius:8px}
+.share-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:15px;border-top:1px solid var(--border-color);padding-top:12px}
+.share-actions button{color:#fff;padding:8px 11px;border:0;border-radius:5px;cursor:pointer;font-family:inherit;font-size:.88rem}
+.share-post{background:#8B263E}.share-pdf{background:#007bff}.share-site{background:#28a745}
+.notice{background:#fff8e7;border:1px solid var(--secondary);padding:12px;border-radius:6px;margin-bottom:15px}
+</style>
 </head>
 <body>
+<header>
+<h1>साहित्य ढाणी <span style="font-size:1.1rem;color:#F7E7CE;font-weight:normal">(रचनाकार: रंजू कंवर चारण)</span></h1>
+<div class="author-subtitle">संचालित: लेखिका रंजू कंवर चारण</div>
+</header>
 
-    <header>
-        <h1>साहित्य ढाणी <span style="font-size: 1.1rem; color: #F7E7CE; font-weight: normal;">(रचनाकार: रंजू कंवर चारण)</span></h1>
-        <div class="author-subtitle">संचालित: लेखिका रंजू कंवर चारण</div>
-    </header>
+<nav>
+<div class="nav-links">
+<button onclick="displayPosts('all')">मुख्य पृष्ठ</button>
+<button onclick="displayPosts('कविता')">कविताएं</button>
+<button onclick="displayPosts('कहानी')">कहानियां</button>
+<button onclick="displayPosts('ई-बुक')">ई-बुक्स / PDF</button>
+<button onclick="displayPosts('चिरजां')">चिरजां (माता जी री)</button>
+<button onclick="displayPosts('भजन')">भजन</button>
+<button onclick="displayPosts('छंद')">छंद</button>
+</div>
+<div>
+<button id="siteShareBtn" onclick="shareWebsite()" style="background:#28a745;color:white;border-radius:5px;padding:8px 12px">🌐 वेबसाइट शेयर करें</button>
+<button id="addPostBtn" onclick="openPublishModal()" class="btn-primary" style="display:none">+ नई रचना/ई-बुक जोड़ें</button>
+<button id="adminLoginBtn" onclick="openModal('adminModal')">एडमिन लॉगिन</button>
+<button id="userLoginBtn" onclick="openModal('userModal')">पाठक लॉगिन</button>
+</div>
+</nav>
 
-    <nav>
-        <div class="nav-links">
-            <button onclick="displayPosts('all')">मुख्य पृष्ठ</button>
-            <button onclick="displayPosts('कविता')">कविताएं</button>
-            <button onclick="displayPosts('कहानी')">कहानियां</button>
-            <button onclick="displayPosts('ई-बुक')">ई-बुक्स / PDF</button>
-            <button onclick="displayPosts('चिरजां')">चिरजां (माता जी री)</button>
-            <button onclick="displayPosts('भजन')">भजन</button>
-            <button onclick="displayPosts('छंद')">छंद</button>
-        </div>
-        <div>
-            <button id="addPostBtn" onclick="openPublishModal()" class="btn-primary" style="display:none;">+ नई रचना/ई-बुक जोड़ें</button>
-            <button id="adminLoginBtn" onclick="openModal('adminModal')">एडमिन लॉगिन</button>
-            <button id="userLoginBtn" onclick="openModal('userModal')">पाठक लॉगिन</button>
-        </div>
-    </nav>
+<div class="layout-grid">
+<main>
+<div id="adminNotice" class="admin-controls" style="display:none">
+<span>🔐 <strong>एडमिन मोड चालू है</strong></span>
+<button class="btn-primary" style="padding:4px 10px;font-size:.85rem" onclick="openModal('changePassModal')">🔑 पासवर्ड बदलें</button>
+</div>
+<div id="postsContainer">🔄 सामग्री लोड हो रही है...</div>
+</main>
+<aside><div class="sidebar-ad-card">
+<p style="font-weight:bold;color:var(--primary);margin-bottom:8px">📢 विज्ञापन (Ad Space)</p>
+<p style="font-size:.8rem;color:#777">यहाँ साइडबार में गूगल एडसेंस या स्पॉन्सर विज्ञापन दिखेंगे।</p>
+</div></aside>
+</div>
 
-    <div class="layout-grid">
-        <main>
-            <div id="adminNotice" class="admin-controls" style="display:none;">
-                <span>🔐 <strong>एडमिन मोड चालू है</strong></span>
-                <button class="btn-primary" style="padding: 4px 10px; font-size: 0.85rem;" onclick="openModal('changePassModal')">🔑 पासवर्ड बदलें</button>
-            </div>
-            <div id="postsContainer">🔄 सामग्री लोड हो रही है...</div>
-        </main>
+<!-- नई/एडिट रचना -->
+<div id="publishModal" class="modal"><div class="modal-content">
+<span class="close" onclick="closeModal('publishModal')">&times;</span>
+<h2 id="modalHeading">नई रचना / ई-बुक जोड़ें</h2>
+<input type="hidden" id="editDocId">
+<input type="text" id="postTitle" placeholder="शीर्षक (Title)">
+<select id="postCategory">
+<option value="कविता">कविता</option><option value="कहानी">कहानी</option><option value="ई-बुक">ई-बुक / PDF</option><option value="चिरजां">चिरजां (माता जी री)</option><option value="भजन">भजन</option><option value="छंद">छंद</option>
+</select>
+<textarea id="postContent" rows="5" placeholder="विवरण या सामग्री यहाँ लिखें..."></textarea>
+<input type="url" id="postPdfUrl" placeholder="📄 PDF / ई-बुक डाउनलोड फ़ाइल लिंक (Google Drive/Mediafire)">
+<label style="display:block;text-align:left"><input type="checkbox" id="isPaid"> क्या यह पेड (Paid) सामग्री है?</label>
+<input type="number" id="postPrice" placeholder="कीमत ₹ में (जैसे: 10, 15, 20, 50)" style="display:none">
+<div style="display:flex;gap:10px;margin-top:10px">
+<button class="btn-primary" onclick="savePostToFirebase()">सुरक्षित करें</button><button onclick="closeModal('publishModal')">रद्द करें</button>
+</div></div></div>
 
-        <aside>
-            <div class="sidebar-ad-card">
-                <p style="font-weight: bold; color: var(--primary); margin-bottom: 8px;">📢 विज्ञापन (Ad Space)</p>
-                <p style="font-size: 0.8rem; color: #777;">यहाँ साइडबार में गूगल एडसेंस या स्पॉन्सर विज्ञापन दिखेंगे।</p>
-            </div>
-        </aside>
-    </div>
+<!-- एडमिन लॉगिन -->
+<div id="adminModal" class="modal"><div class="modal-content">
+<span class="close" onclick="closeModal('adminModal')">&times;</span>
+<h2>एडमिन लॉगिन (रंजू कंवर चारण)</h2>
+<p style="font-size:.85rem;color:#666;margin-bottom:8px;text-align:left">पासकोड दर्ज करें। पहली बार का डिफ़ॉल्ट पासकोड: <strong>1234</strong></p>
+<input type="password" id="adminPassCode" placeholder="एडमिन पासकोड">
+<button class="btn-primary" style="width:100%" onclick="loginAdmin()">लॉगिन करें</button>
+</div></div>
 
-    <!-- नई/एडिट रचना फॉर्म -->
-    <div id="publishModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('publishModal')">&times;</span>
-            <h2 id="modalHeading">नई रचना / ई-बुक जोड़ें</h2>
-            <input type="hidden" id="editDocId">
-            <input type="text" id="postTitle" placeholder="शीर्षक (Title)">
-            <select id="postCategory">
-                <option value="कविता">कविता</option>
-                <option value="कहानी">कहानी</option>
-                <option value="ई-बुक">ई-बुक / PDF</option>
-                <option value="चिरजां">चिरजां (माता जी री)</option>
-                <option value="भजन">भजन</option>
-                <option value="छंद">छंद</option>
-            </select>
-            <textarea id="postContent" rows="5" placeholder="विवरण या सामग्री यहाँ लिखें..."></textarea>
-            <input type="url" id="postPdfUrl" placeholder="📄 PDF / ई-बुक डाउनलोड फ़ाइल लिंक (Google Drive/Mediafire)">
-            <label style="display:block; text-align:left;"><input type="checkbox" id="isPaid"> क्या यह पेड (Paid) सामग्री है?</label>
-            <input type="number" id="postPrice" placeholder="कीमत ₹ में (जैसे: 10, 15, 20, 50)" style="display:none;">
-            <div style="display:flex; gap:10px; margin-top:10px;">
-                <button class="btn-primary" onclick="savePostToFirebase()">सुरक्षित करें</button>
-                <button onclick="closeModal('publishModal')">रद्द करें</button>
-            </div>
-        </div>
-    </div>
+<!-- पासवर्ड बदलें -->
+<div id="changePassModal" class="modal"><div class="modal-content">
+<span class="close" onclick="closeModal('changePassModal')">&times;</span><h2>एडमिन पासवर्ड बदलें</h2>
+<input type="password" id="oldPass" placeholder="वर्तमान (पुराना) पासवर्ड">
+<input type="password" id="newPass" placeholder="नया पासवर्ड दर्ज करें">
+<input type="password" id="confirmNewPass" placeholder="नया पासवर्ड दोबारा लिखें">
+<button class="btn-primary" style="width:100%;margin-top:10px" onclick="updateAdminPassword()">पासवर्ड सुरक्षित करें</button>
+</div></div>
 
-    <!-- एडमिन लॉगिन मोडल -->
-    <div id="adminModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('adminModal')">&times;</span>
-            <h2>एडमिन लॉगिन (रंजू कंवर चारण)</h2>
-            <p style="font-size:0.85rem; color:#666; margin-bottom:8px; text-align:left;">पासकोड दर्ज करें (डिफ़ॉल्ट पासकोड: <strong>1234</strong>)</p>
-            <input type="password" id="adminPassCode" placeholder="एडमिन पासकोड">
-            <button class="btn-primary" style="width:100%;" onclick="loginAdmin()">लॉगिन करें</button>
-        </div>
-    </div>
+<!-- पाठक लॉगिन -->
+<div id="userModal" class="modal"><div class="modal-content">
+<span class="close" onclick="closeModal('userModal')">&times;</span><h2>पाठक / सदस्य लॉगिन</h2>
+<input type="text" id="userName" placeholder="आपका नाम">
+<button class="btn-primary" style="width:100%" onclick="loginUser()">लॉगिन करें</button>
+</div></div>
 
-    <!-- पासवर्ड बदलने का मोडल -->
-    <div id="changePassModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('changePassModal')">&times;</span>
-            <h2>एडमिन पासवर्ड बदलें</h2>
-            <input type="password" id="oldPass" placeholder="वर्तमान (पुराना) पासवर्ड">
-            <input type="password" id="newPass" placeholder="नया पासवर्ड दर्ज करें">
-            <input type="password" id="confirmNewPass" placeholder="नया पासवर्ड दोबारा लिखें">
-            <button class="btn-primary" style="width:100%; margin-top:10px;" onclick="updateAdminPassword()">पासवर्ड सुरक्षित करें</button>
-        </div>
-    </div>
+<!-- भुगतान -->
+<div id="paymentModal" class="modal"><div class="modal-content">
+<span class="close" onclick="closeModal('paymentModal')">&times;</span>
+<h2 style="color:var(--primary)">ऑनलाइन भुगतान करें</h2>
+<p id="payModalText" style="margin:10px 0;font-weight:bold"></p>
+<a id="directUpiPayBtn" href="#" class="btn-pay-direct" style="background:#28a745;color:white;padding:12px 18px;border-radius:6px;text-decoration:none;display:block;margin:12px 0;text-align:center">📲 GPay / PhonePe / Paytm से ₹ पे करें</a>
+<div style="background:#FFF8E7;padding:12px;border-radius:5px;border:1px dashed var(--accent);margin:10px 0">
+<p style="font-size:.9rem"><strong>या QR Code स्कैन करके पे करें:</strong></p>
+<img id="qrCodeImg" src="" alt="UPI QR Code">
+<p style="font-size:.85rem;color:#555;margin-top:4px">UPI ID: <strong id="displayUpiId" style="color:var(--primary)">7665085315@ybl</strong></p>
+</div>
+<button class="btn-primary" style="width:100%;margin-top:8px;background:#777" onclick="closeModal('paymentModal')">बंद करें</button>
+</div></div>
 
-    <!-- पाठक लॉगिन मोडल -->
-    <div id="userModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('userModal')">&times;</span>
-            <h2>पाठक / सदस्य लॉगिन</h2>
-            <input type="text" id="userName" placeholder="आपका नाम">
-            <button class="btn-primary" style="width:100%;" onclick="loginUser()">लॉगिन करें</button>
-        </div>
-    </div>
+<footer>
+<p>© 2026 साहित्य ढाणी | लेखिका रंजू कंवर चारण</p>
+<p style="margin-top:4px;font-size:.8rem">📞 अन्य जानकारी या सहायता हेतु:
+<a id="footerWaBtn" href="#" target="_blank" rel="noopener" class="btn-contact-wa">💬 व्हाट्सएप से संपर्क करें</a></p>
+</footer>
 
-    <!-- भुगतान मोडल -->
-    <div id="paymentModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('paymentModal')">&times;</span>
-            <h2 style="color: var(--primary);">ऑनलाइन भुगतान करें</h2>
-            <p id="payModalText" style="margin: 10px 0; font-weight: bold;"></p>
-            <a id="directUpiPayBtn" href="#" class="btn-pay-direct">📲 GPay / PhonePe / Paytm से ₹ पे करें</a>
-            <div style="background: #FFF8E7; padding: 12px; border-radius: 5px; border: 1px dashed var(--accent); margin: 10px 0;">
-                <p style="font-size: 0.9rem;"><strong>या QR Code स्कैन करके पे करें:</strong></p>
-                <img id="qrCodeImg" src="" alt="UPI QR Code">
-                <p style="font-size: 0.85rem; color: #555; margin-top: 4px;">UPI ID: <strong id="displayUpiId" style="color: var(--primary);">7665085315@ybl</strong></p>
-            </div>
-            <button class="btn-primary" style="width: 100%; margin-top: 8px; background-color: #777;" onclick="closeModal('paymentModal')">बंद करें</button>
-        </div>
-    </div>
+<script>
+'use strict';
+const MY_UPI_ID = "7665085315@ybl";
+const MY_NAME = "Ranju Kanwar Charan";
+const MY_WHATSAPP_NUMBER = "918005928244";
 
-    <footer>
-        <p>© 2026 साहित्य ढाणी | लेखिका रंजू कंवर चारण</p>
-        <p style="margin-top: 4px; font-size: 0.8rem;">
-            📞 अन्य जानकारी या सहायता हेतु: 
-            <a id="footerWaBtn" href="#" target="_blank" class="btn-contact-wa">💬 व्हाट्सएप से संपर्क करें</a>
-        </p>
-    </footer>
+// आपकी दी हुई Firebase configuration
+const firebaseConfig = {
+ apiKey:"AIzaSyC-4-Hc6jS1UoyC4hBdx709ozVc0DY7AE",
+ authDomain:"shehita-dhani.firebaseapp.com",
+ projectId:"shahita-dhani",
+ storageBucket:"shahita-dhani.firebasestorage.app",
+ messagingSenderId:"141938743753",
+ appId:"1:141938743753:web:45e5f23ee99298511f018"
+};
 
-    <script>
-        const MY_UPI_ID = "7665085315@ybl";
-        const MY_NAME = "Ranju Kanwar Charan";
-        const MY_WHATSAPP_NUMBER = "918005928244";
+if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+let posts = [];
+let activeFilter = 'all';
 
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyC-4-Hc6jS1UoyC4hBdx709ozVc0DY7AE",
-            authDomain: "shehita-dhani.firebaseapp.com",
-            projectId: "shahita-dhani",
-            storageBucket: "shahita-dhani.firebasestorage.app",
-            messagingSenderId: "141938743753",
-            appId: "1:141938743753:web:45e5f23ee99298511f018"
-        };
+function getSiteUrl(){
+ const url = new URL(window.location.href);
+ url.search = '';
+ url.hash = '';
+ return url.toString();
+}
 
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        const db = firebase.firestore();
+// हर रचना का अलग स्थायी URL: आपकी वेबसाइट/?post=FirebaseDocumentID
+function getPostShareLink(postId){
+ const url = new URL(getSiteUrl());
+ url.searchParams.set('post', postId);
+ return url.toString();
+}
 
-        let posts = [];
+async function copyText(text, successMessage){
+ try{
+  if(navigator.clipboard && window.isSecureContext){
+   await navigator.clipboard.writeText(text);
+  }else{
+   const box=document.createElement('textarea');
+   box.value=text;box.style.position='fixed';box.style.opacity='0';
+   document.body.appendChild(box);box.select();
+   const copied=document.execCommand('copy');box.remove();
+   if(!copied) throw new Error('Copy failed');
+  }
+  alert(successMessage);
+ }catch(error){
+  window.prompt('लिंक कॉपी करने के लिए नीचे दिए लिंक को कॉपी करें:',text);
+ }
+}
 
-        function loadPostsFromFirebase() {
-            db.collection("posts").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
-                posts = [];
-                snapshot.forEach((doc) => {
-                    posts.push({ docId: doc.id, ...doc.data() });
-                });
-                displayPosts();
-            }, (error) => {
-                console.error("Firebase fetch error: ", error);
-                document.getElementById('postsContainer').innerHTML = "<p style='text-align:center;'>डेटा लोड करने में समस्या आ रही है।</p>";
-            });
-        }
+async function sharePost(postId,title){
+ const url=getPostShareLink(postId);
+ const data={title:title,text:`साहित्य ढाणी पर पढ़ें: ${title}`,url};
+ if(navigator.share){
+  try{await navigator.share(data);}catch(error){if(error.name!=='AbortError') console.error(error);}
+ }else{await copyText(url,'रचना की अलग लिंक कॉपी हो गई है!');}
+}
 
-        function checkAuthStatus() {
-            const isAdmin = localStorage.getItem('sd_isAdmin') === 'true';
-            const userName = localStorage.getItem('sd_userName');
+async function sharePDF(pdfUrl,title){
+ if(!pdfUrl){alert('इस रचना की PDF उपलब्ध नहीं है।');return;}
+ if(navigator.share){
+  try{await navigator.share({title:title,text:`${title} की PDF`,url:pdfUrl});}
+  catch(error){if(error.name!=='AbortError') console.error(error);}
+ }else{await copyText(pdfUrl,'PDF की लिंक कॉपी हो गई है!');}
+}
 
-            if (isAdmin) {
-                document.getElementById('addPostBtn').style.display = 'inline-block';
-                document.getElementById('adminNotice').style.display = 'flex';
-                document.getElementById('adminLoginBtn').innerText = "एडमिन (लॉगआउट)";
-                document.getElementById('adminLoginBtn').onclick = logoutAdmin;
-                document.getElementById('userLoginBtn').style.display = 'none';
-            } else {
-                document.getElementById('addPostBtn').style.display = 'none';
-                document.getElementById('adminNotice').style.display = 'none';
-                document.getElementById('adminLoginBtn').innerText = "एडमिन लॉगिन";
-                document.getElementById('adminLoginBtn').onclick = () => openModal('adminModal');
+async function shareWebsite(){
+ const url=getSiteUrl();
+ if(navigator.share){
+  try{await navigator.share({title:'साहित्य ढाणी',text:'लेखिका रंजू कंवर चारण की साहित्यिक वेबसाइट पर आपका स्वागत है।',url});}
+  catch(error){if(error.name!=='AbortError') console.error(error);}
+ }else{await copyText(url,'पूरी वेबसाइट की लिंक कॉपी हो गई है!');}
+}
 
-                if (userName) {
-                    document.getElementById('userLoginBtn').innerText = userName + " (लॉगआउट)";
-                    document.getElementById('userLoginBtn').onclick = logoutUser;
-                } else {
-                    document.getElementById('userLoginBtn').innerText = "पाठक लॉगिन";
-                    document.getElementById('userLoginBtn').onclick = () => openModal('userModal');
-                }
-            }
-        }
+function loadPostsFromFirebase(){
+ db.collection('posts').orderBy('timestamp','desc').onSnapshot(snapshot=>{
+  posts=[];
+  snapshot.forEach(doc=>posts.push({docId:doc.id,...doc.data()}));
+  displayPosts(activeFilter);
+ },error=>{
+  console.error('Firebase fetch error:',error);
+  document.getElementById('postsContainer').textContent='डेटा लोड करने में समस्या आ रही है। Firebase configuration और Firestore Rules जाँचें।';
+ });
+}
 
-        function displayPosts(filter = 'all') {
-            const container = document.getElementById('postsContainer');
-            container.innerHTML = '';
+function checkAuthStatus(){
+ const isAdmin=localStorage.getItem('sd_isAdmin')==='true';
+ const userName=localStorage.getItem('sd_userName');
+ document.getElementById('addPostBtn').style.display=isAdmin?'inline-block':'none';
+ document.getElementById('adminNotice').style.display=isAdmin?'flex':'none';
+ document.getElementById('adminLoginBtn').innerText=isAdmin?'एडमिन (लॉगआउट)':'एडमिन लॉगिन';
+ document.getElementById('adminLoginBtn').onclick=isAdmin?logoutAdmin:()=>openModal('adminModal');
+ document.getElementById('userLoginBtn').style.display=isAdmin?'none':'inline-block';
+ if(!isAdmin){
+  document.getElementById('userLoginBtn').innerText=userName?userName+' (लॉगआउट)':'पाठक लॉगिन';
+  document.getElementById('userLoginBtn').onclick=userName?logoutUser:()=>openModal('userModal');
+ }
+}
 
-            const isAdmin = localStorage.getItem('sd_isAdmin') === 'true';
-            const filtered = filter === 'all' ? posts : posts.filter(p => p.category === filter);
+function escapeHTML(value){
+ return String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+}
 
-            if(filtered.length === 0) {
-                container.innerHTML = "<p style='text-align:center; padding: 2rem; color: #666;'>यहाँ अभी कोई रचना उपलब्ध नहीं है।</p>";
-                return;
-            }
+function displayPosts(filter='all'){
+ activeFilter=filter;
+ const container=document.getElementById('postsContainer');
+ container.innerHTML='';
+ const isAdmin=localStorage.getItem('sd_isAdmin')==='true';
+ const sharedPostId=new URLSearchParams(window.location.search).get('post');
 
-            filtered.forEach(post => {
-                const card = document.createElement('div');
-                card.className = 'card';
-                
-                let adminControls = isAdmin ? `
-                    <div class="admin-btn-group">
-                        <button class="btn-edit" onclick="editPost('${post.docId}')">✏️ एडिट</button>
-                        <button class="btn-danger" onclick="deletePostFromFirebase('${post.docId}')">❌ हटाएँ</button>
-                    </div>` : '';
+ let filtered=sharedPostId
+  ? posts.filter(p=>p.docId===sharedPostId)
+  : (filter==='all'?posts:posts.filter(p=>p.category===filter));
 
-                let pdfLinkHTML = post.pdfUrl ? `<br><a href="${post.pdfUrl}" target="_blank" class="btn-pdf">📄 PDF / ई-बुक डाउनलोड करें</a>` : '';
+ if(sharedPostId && filtered.length===0){
+  container.innerHTML='<div class="notice">यह रचना नहीं मिल सकी। संभव है कि लिंक गलत हो या रचना हटा दी गई हो। <button class="btn-primary" onclick="goToHome()">मुख्य पृष्ठ पर जाएँ</button></div>';
+  return;
+ }
+ if(filtered.length===0){
+  container.innerHTML="<p style='text-align:center;padding:2rem;color:#666'>यहाँ अभी कोई रचना उपलब्ध नहीं है।</p>";
+  return;
+ }
 
-                let contentHTML = '';
-                if(post.isPaid && !isAdmin) {
-                    contentHTML = `
-                        <div class="content-preview">${post.content}</div>
-                        <div class="paywall-box">
-                            <p>🔒 इस रचना / ई-बुक को डाउनलोड करने व पढ़ने का शुल्क: <strong>₹${post.price}</strong></p>
-                            <button class="btn-primary" style="margin-top:6px;" onclick="openPaymentModal(${post.price}, '${post.title}')">अनलॉक करें (Pay ₹${post.price})</button>
-                        </div>
-                    `;
-                } else {
-                    contentHTML = `<div class="full-content">${post.content} ${pdfLinkHTML}</div>`;
-                }
+ filtered.forEach(post=>{
+  const card=document.createElement('article');
+  card.className='card';
+  const title=escapeHTML(post.title);
+  const category=escapeHTML(post.category);
+  const author=escapeHTML(post.author||'रंजू कंवर चारण');
+  const content=escapeHTML(post.content).replace(/\n/g,'<br>');
+  const pdfUrl=String(post.pdfUrl||'');
+  const safePdf=/^https?:\/\//i.test(pdfUrl)?pdfUrl:'';
+  const adminControls=isAdmin?`<div class="admin-btn-group">
+   <button class="btn-edit" data-action="edit" data-id="${escapeHTML(post.docId)}">✏️ एडिट</button>
+   <button class="btn-danger" data-action="delete" data-id="${escapeHTML(post.docId)}">❌ हटाएँ</button>
+  </div>`:'';
 
-                card.innerHTML = `
-                    ${adminControls}
-                    <span class="badge">${post.category}</span>
-                    <h2>${post.title}</h2>
-                    <small style="color:#666;">लेखिका: ${post.author || 'रंजू कंवर चारण'}</small>
-                    ${contentHTML}
-                `;
-                container.appendChild(card);
-            });
-        }
+  let contentHTML='';
+  if(post.isPaid && !isAdmin){
+   contentHTML=`<div class="full-content">${content}</div>
+    <div class="paywall-box"><p>🔒 इस रचना / ई-बुक को डाउनलोड करने व पढ़ने का शुल्क: <strong>₹${escapeHTML(post.price||0)}</strong></p>
+    <button class="btn-primary" style="margin-top:6px" data-action="pay" data-id="${escapeHTML(post.docId)}">अनलॉक करें (Pay ₹${escapeHTML(post.price||0)})</button></div>`;
+  }else{
+   contentHTML=`<div class="full-content">${content}${safePdf?`<br><a href="${escapeHTML(safePdf)}" target="_blank" rel="noopener" class="btn-pdf">📄 PDF / ई-बुक डाउनलोड करें</a>`:''}</div>`;
+  }
 
-        document.getElementById('isPaid').addEventListener('change', function() {
-            document.getElementById('postPrice').style.display = this.checked ? 'block' : 'none';
-        });
+  const shareHTML=`<div class="share-actions">
+   <button class="share-post" data-action="share-post" data-id="${escapeHTML(post.docId)}">🔗 रचना शेयर करें</button>
+   ${safePdf?'<button class="share-pdf" data-action="share-pdf">📄 PDF शेयर करें</button>':''}
+   <button class="share-site" data-action="share-site">🌐 वेबसाइट शेयर करें</button>
+  </div>`;
 
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+  card.innerHTML=`${adminControls}<span class="badge">${category}</span>
+   <h2>${title}</h2><small style="color:#666">लेखिका: ${author}</small>
+   ${contentHTML}${shareHTML}`;
 
-        function openPublishModal() {
-            document.getElementById('modalHeading').innerText = "नई रचना / ई-बुक जोड़ें";
-            document.getElementById('editDocId').value = '';
-            document.getElementById('postTitle').value = '';
-            document.getElementById('postContent').value = '';
-            document.getElementById('postPdfUrl').value = '';
-            document.getElementById('isPaid').checked = false;
-            document.getElementById('postPrice').value = '';
-            document.getElementById('postPrice').style.display = 'none';
-            openModal('publishModal');
-        }
+  // Buttons get listeners without putting user content into executable inline JavaScript.
+  card.querySelector('[data-action="share-post"]').addEventListener('click',()=>sharePost(post.docId,post.title||'साहित्य ढाणी'));
+  const pdfButton=card.querySelector('[data-action="share-pdf"]');
+  if(pdfButton) pdfButton.addEventListener('click',()=>sharePDF(safePdf,post.title||'PDF'));
+  card.querySelector('[data-action="share-site"]').addEventListener('click',shareWebsite);
+  const editButton=card.querySelector('[data-action="edit"]');
+  if(editButton) editButton.addEventListener('click',()=>editPost(post.docId));
+  const deleteButton=card.querySelector('[data-action="delete"]');
+  if(deleteButton) deleteButton.addEventListener('click',()=>deletePostFromFirebase(post.docId));
+  const payButton=card.querySelector('[data-action="pay"]');
+  if(payButton) payButton.addEventListener('click',()=>openPaymentModal(post.price||0,post.title||'रचना'));
+  container.appendChild(card);
+ });
+}
 
-        function editPost(docId) {
-            const post = posts.find(p => p.docId === docId);
-            if (post) {
-                document.getElementById('modalHeading').innerText = "रचना/ई-बुक एडिट करें";
-                document.getElementById('editDocId').value = post.docId;
-                document.getElementById('postTitle').value = post.title;
-                document.getElementById('postCategory').value = post.category;
-                document.getElementById('postContent').value = post.content;
-                document.getElementById('postPdfUrl').value = post.pdfUrl || '';
-                document.getElementById('isPaid').checked = post.isPaid || false;
-                document.getElementById('postPrice').value = post.price || '';
-                document.getElementById('postPrice').style.display = post.isPaid ? 'block' : 'none';
-                openModal('publishModal');
-            }
-        }
+function goToHome(){
+ const url=new URL(getSiteUrl());
+ window.location.href=url.toString();
+}
+document.getElementById('isPaid').addEventListener('change',function(){
+ document.getElementById('postPrice').style.display=this.checked?'block':'none';
+});
+function openModal(id){document.getElementById(id).style.display='flex';}
+function closeModal(id){document.getElementById(id).style.display='none';}
 
-        function savePostToFirebase() {
-            const editDocId = document.getElementById('editDocId').value;
-            const title = document.getElementById('postTitle').value;
-            const category = document.getElementById('postCategory').value;
-            const content = document.getElementById('postContent').value;
-            const pdfUrl = document.getElementById('postPdfUrl').value;
-            const isPaid = document.getElementById('isPaid').checked;
-            const price = document.getElementById('postPrice').value || 0;
+function openPublishModal(){
+ document.getElementById('modalHeading').innerText='नई रचना / ई-बुक जोड़ें';
+ document.getElementById('editDocId').value='';
+ document.getElementById('postTitle').value='';
+ document.getElementById('postCategory').value='कविता';
+ document.getElementById('postContent').value='';
+ document.getElementById('postPdfUrl').value='';
+ document.getElementById('isPaid').checked=false;
+ document.getElementById('postPrice').value='';
+ document.getElementById('postPrice').style.display='none';
+ openModal('publishModal');
+}
 
-            if(!title || !content) {
-                alert('कृपया शीर्षक और विवरण भरें!');
-                return;
-            }
+function editPost(docId){
+ const post=posts.find(p=>p.docId===docId);
+ if(!post)return;
+ document.getElementById('modalHeading').innerText='रचना/ई-बुक एडिट करें';
+ document.getElementById('editDocId').value=post.docId;
+ document.getElementById('postTitle').value=post.title||'';
+ document.getElementById('postCategory').value=post.category||'कविता';
+ document.getElementById('postContent').value=post.content||'';
+ document.getElementById('postPdfUrl').value=post.pdfUrl||'';
+ document.getElementById('isPaid').checked=!!post.isPaid;
+ document.getElementById('postPrice').value=post.price||'';
+ document.getElementById('postPrice').style.display=post.isPaid?'block':'none';
+ openModal('publishModal');
+}
 
-            const postData = {
-                title: title,
-                category: category,
-                content: content,
-                pdfUrl: pdfUrl,
-                isPaid: isPaid,
-                price: price,
-                author: 'रंजू कंवर चारण',
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            };
+async function savePostToFirebase(){
+ if(localStorage.getItem('sd_isAdmin')!=='true'){alert('पहले एडमिन लॉगिन करें।');return;}
+ const editDocId=document.getElementById('editDocId').value;
+ const title=document.getElementById('postTitle').value.trim();
+ const category=document.getElementById('postCategory').value;
+ const content=document.getElementById('postContent').value.trim();
+ const pdfUrl=document.getElementById('postPdfUrl').value.trim();
+ const isPaid=document.getElementById('isPaid').checked;
+ const price=Number(document.getElementById('postPrice').value||0);
+ if(!title||!content){alert('कृपया शीर्षक और विवरण भरें!');return;}
+ if(isPaid&&(!Number.isFinite(price)||price<=0)){alert('पेड सामग्री की सही कीमत दर्ज करें।');return;}
+ if(pdfUrl&&!/^https?:\/\//i.test(pdfUrl)){alert('कृपया PDF का सही http/https लिंक दर्ज करें।');return;}
+ const postData={title,category,content,pdfUrl,isPaid,price,author:'रंजू कंवर चारण',timestamp:firebase.firestore.FieldValue.serverTimestamp()};
+ try{
+  if(editDocId) await db.collection('posts').doc(editDocId).update(postData);
+  else await db.collection('posts').add(postData);
+  alert(editDocId?'रचना सफलतापूर्वक अपडेट हो गई!':'रचना सफलतापूर्वक सुरक्षित हो गई!');
+  closeModal('publishModal');
+ }catch(error){alert('सुरक्षित करने में त्रुटि: '+error.message);}
+}
 
-            if (editDocId) {
-                // अपडेट पुरानी रचना
-                db.collection("posts").doc(editDocId).update(postData).then(() => {
-                    alert("रचना सफलतापूर्वक अपडेट हो गई!");
-                    closeModal('publishModal');
-                }).catch((error) => {
-                    alert("अपडेट में त्रुटि: " + error.message);
-                });
-            } else {
-                // जोड़ें नई रचना
-                db.collection("posts").add(postData).then(() => {
-                    alert("रचना सफलतापूर्वक सुरक्षित हो गई!");
-                    closeModal('publishModal');
-                }).catch((error) => {
-                    alert("सुरक्षित करने में त्रुटि: " + error.message);
-                });
-            }
-        }
+async function deletePostFromFirebase(docId){
+ if(localStorage.getItem('sd_isAdmin')!=='true'){alert('पहले एडमिन लॉगिन करें।');return;}
+ if(confirm('क्या आप सचमुच इस रचना को हटाना चाहते हैं?')){
+  try{await db.collection('posts').doc(docId).delete();alert('रचना हटा दी गई है।');}
+  catch(error){alert('हटाने में त्रुटि: '+error.message);}
+ }
+}
 
-        function deletePostFromFirebase(docId) {
-            if (confirm('क्या आप सचमुच इस रचना को हटाना चाहते हैं?')) {
-                db.collection("posts").doc(docId).delete().then(() => {
-                    alert("रचना हटा दी गई है।");
-                });
-            }
-        }
+function loginAdmin(){
+ const pass=document.getElementById('adminPassCode').value;
+ const savedPass=localStorage.getItem('sd_adminPass')||'1234';
+ if(pass===savedPass){
+  localStorage.setItem('sd_isAdmin','true');closeModal('adminModal');
+  document.getElementById('adminPassCode').value='';checkAuthStatus();displayPosts(activeFilter);
+ }else alert('गलत पासकोड! कृपया सही पासकोड दर्ज करें।');
+}
+function updateAdminPassword(){
+ const oldPass=document.getElementById('oldPass').value;
+ const newPass=document.getElementById('newPass').value;
+ const confirmPass=document.getElementById('confirmNewPass').value;
+ const currentPass=localStorage.getItem('sd_adminPass')||'1234';
+ if(oldPass!==currentPass){alert('पुराना पासवर्ड गलत है!');return;}
+ if(newPass.length<8){alert('सुरक्षा के लिए नया पासवर्ड कम से कम 8 अक्षरों का रखें।');return;}
+ if(newPass!==confirmPass){alert('नया पासवर्ड और पुष्टि पासवर्ड मेल नहीं खा रहे!');return;}
+ localStorage.setItem('sd_adminPass',newPass);
+ alert('इस ब्राउज़र में पासवर्ड बदल गया है। ध्यान दें: यह सुरक्षित सर्वर-आधारित एडमिन पासवर्ड नहीं है।');
+ closeModal('changePassModal');
+}
+function logoutAdmin(){localStorage.removeItem('sd_isAdmin');checkAuthStatus();displayPosts(activeFilter);}
+function loginUser(){
+ const name=document.getElementById('userName').value.trim();
+ if(name){localStorage.setItem('sd_userName',name);closeModal('userModal');checkAuthStatus();}
+ else alert('कृपया अपना नाम लिखें।');
+}
+function logoutUser(){localStorage.removeItem('sd_userName');checkAuthStatus();}
 
-        function loginAdmin() {
-            const pass = document.getElementById('adminPassCode').value;
-            const savedPass = localStorage.getItem('sd_adminPass') || '1234';
+function openPaymentModal(price,title){
+ document.getElementById('payModalText').innerText=`"${title}" को अनलॉक करने के लिए ₹${price} का भुगतान करें।`;
+ const upiLink=`upi://pay?pa=${MY_UPI_ID}&pn=${encodeURIComponent(MY_NAME)}&tn=${encodeURIComponent(title)}&am=${encodeURIComponent(price)}&cu=INR`;
+ document.getElementById('directUpiPayBtn').href=upiLink;
+ document.getElementById('qrCodeImg').src=`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiLink)}`;
+ openModal('paymentModal');
+}
 
-            if (pass === savedPass) {
-                localStorage.setItem('sd_isAdmin', 'true');
-                closeModal('adminModal');
-                document.getElementById('adminPassCode').value = '';
-                checkAuthStatus();
-                displayPosts();
-            } else {
-                alert('गलत पासकोड! कृपया सही पासकोड दर्ज करें।');
-            }
-        }
-
-        function updateAdminPassword() {
-            const oldPassInput = document.getElementById('oldPass').value;
-            const newPassInput = document.getElementById('newPass').value;
-            const confirmPassInput = document.getElementById('confirmNewPass').value;
-            const currentPass = localStorage.getItem('sd_adminPass') || '1234';
-
-            if (oldPassInput !== currentPass) {
-                alert('पुराना पासवर्ड गलत है!');
-                return;
-            }
-            if (!newPassInput || newPassInput.length < 4) {
-                alert('नया पासवर्ड कम से कम 4 अंकों का होना चाहिए!');
-                return;
-            }
-            if (newPassInput !== confirmPassInput) {
-                alert('नया पासवर्ड और पुष्टि पासवर्ड मेल नहीं खा रहे!');
-                return;
-            }
-
-            localStorage.setItem('sd_adminPass', newPassInput);
-            alert('पासवर्ड सफलतापूर्वक बदल दिया गया है!');
-            closeModal('changePassModal');
-        }
-
-        function logoutAdmin() {
-            localStorage.removeItem('sd_isAdmin');
-            checkAuthStatus();
-            displayPosts();
-        }
-
-        function loginUser() {
-            const name = document.getElementById('userName').value;
-            if (name) {
-                localStorage.setItem('sd_userName', name);
-                closeModal('userModal');
-                checkAuthStatus();
-            }
-        }
-
-        function logoutUser() {
-            localStorage.removeItem('sd_userName');
-            checkAuthStatus();
-        }
-
-        function openPaymentModal(price, title) {
-            document.getElementById('payModalText').innerText = `"${title}" को अनलॉक करने के लिए ₹${price} का भुगतान करें।`;
-            
-            const upiLink = `upi://pay?pa=${MY_UPI_ID}&pn=${encodeURIComponent(MY_NAME)}&tn=${encodeURIComponent(title)}&am=${price}&cu=INR`;
-            document.getElementById('directUpiPayBtn').href = upiLink;
-
-            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiLink)}`;
-            document.getElementById('qrCodeImg').src = qrUrl;
-
-            openModal('paymentModal');
-        }
-
-        window.onload = function() {
-            const waInfoText = encodeURIComponent(`नमस्ते लेखिका रंजू कंवर जी! मुझे साहित्य ढाणी वेबसाइट के संबंध में जानकारी चाहिए।`);
-            document.getElementById('footerWaBtn').href = `https://wa.me/${MY_WHATSAPP_NUMBER}?text=${waInfoText}`;
-
-            checkAuthStatus();
-            loadPostsFromFirebase();
-        }
-    </script>
+window.addEventListener('DOMContentLoaded',()=>{
+ const waText=encodeURIComponent('नमस्ते लेखिका रंजू कंवर जी! मुझे साहित्य ढाणी वेबसाइट के संबंध में जानकारी चाहिए।');
+ document.getElementById('footerWaBtn').href=`https://wa.me/${MY_WHATSAPP_NUMBER}?text=${waText}`;
+ checkAuthStatus();
+ loadPostsFromFirebase();
+});
+</script>
 </body>
 </html>
